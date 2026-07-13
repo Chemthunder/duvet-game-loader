@@ -1,0 +1,25 @@
+{
+    "name": "Duvet Game Loader",
+    "description": "",
+    "dependencies": {
+        "device": "*",
+        "Coil": "github:chemthunder/coil#3e35a246631fc8c3d1c77b18457cf3f62c9f468b"
+    },
+    "files": [
+        "main.ts",
+        "README.md",
+        "assets.json"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "targetVersions": {
+        "target": "4.0.14",
+        "targetId": "arcade"
+    },
+    "supportedTargets": [
+        "arcade"
+    ],
+    "preferredEditor": "tsprj",
+    "languageRestriction": "javascript-only"
+}
