@@ -1,3 +1,15 @@
+module Duvet {
+    export const MAIN = new Game(
+        "Duvet Loader",
+        MetaDataBuilder.build(
+            "Chemthunder",
+            1.01,
+            "ARR",
+            "Allows you to load multiple games from one project."
+        )
+    );
+}
+
 module Duvet.API {
     export const carts: Cartridge[] = [];
 
@@ -62,9 +74,7 @@ module Duvet.API {
 
 module Duvet.Carts {
     export const DuvetLoader: API.Cartridge = new API.CartBuilder("Duvet Loader", game.Color.Yellow)
-        .file(() => {
-            print("Hi");
-        })
+        .file(() => print("Loaded Duvet external"))
         .build();
 }
 
@@ -75,6 +85,7 @@ module Duvet {
 
     export class Primary implements Pipeline {
         Begin: Payload = new Payload();
+        Render: Payload = new Payload();
 
         public index: number = 0;
         public appOpen: boolean = false;
@@ -90,7 +101,9 @@ module Duvet {
                 }
 
                 this.update();
-
+                game.consoleOverlay.setVisible(false, 1);
+            });
+            this.Begin.attach(() => {
                 controller.right.onEvent(ControllerButtonEvent.Pressed, () => {
                     if (!this.appOpen) {
                         if (this.index < API.carts.length - 1) {
@@ -128,18 +141,50 @@ module Duvet {
                     }
                 });
             });
+
+            this.Render.attach(() => {
+                scene.createRenderable(500, (handler, cam) => {
+                    const toDraw = API.carts.get(this.index);
+                    const list = API.carts;
+
+                    handler.printCenter(
+                        toDraw.name,
+                        20,
+                        1
+                    );
+
+                    handler.printCenter(
+                        `${this.index + 1}/${list.length}`,
+                        screen.height - 25,
+                        1
+                    );
+
+                    handler.print(
+                        `Duvet Loader #${MAIN.getMetaData().getVersion()}`,
+                        0,
+                        screen.height - 10,
+                        1
+                    );
+                }, () => !this.appOpen);
+            });
         }
 
         public update() {
             const toDraw = API.carts.get(this.index);
-            const disp = sprites.create(createImage(16, 32, toDraw.color), Display);
-
-            disp.sayText(toDraw.name);
+            const disp = sprites.create(
+                createImage(
+                    16,
+                    32,
+                    toDraw.color
+                ),
+                Display
+            );
         }
 
         public getPayloads(): Payload[] {
             return [
-                this.Begin
+                this.Begin,
+                this.Render
             ];
         }
 
